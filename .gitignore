@@ -1,0 +1,6 @@
+# IDE User Config File
+.vscode/
+*.user
+
+# In-source build folder
+[bB]uild/
