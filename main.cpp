@@ -20,10 +20,9 @@ public:
         QPixmap invalid(requestedSize);
         invalid.fill(Qt::transparent);
 
-        QStringList idAndName = id.split('/');
-        if (idAndName.length() != 2) return invalid;
-        int index = idAndName.at(0).toInt();
-        QString name = idAndName.at(1).trimmed();
+        if (!id.contains('/')) return invalid;
+        int index = id.section('/', 0, 0).toInt();
+        QString name = id.section('/', 1).trimmed();
         if (!m_loader.keyMap().contains(index) || name.isEmpty()) return invalid;
         qDebug() << id << index << name << requestedSize;
 
@@ -64,10 +63,13 @@ int main(int argc, char ** argv) {
         visible: true
         width: 450
         height: 450
+        color: systemPalette.window
 
         function updateImageUrl() {
             iconImage.source = "image://icon_engine_provider/" + iconEngineList.currentIndex + "/" + iconName.text;
         }
+
+        SystemPalette { id: systemPalette; }
 
         ColumnLayout {
             anchors.fill: parent
@@ -76,6 +78,7 @@ int main(int argc, char ** argv) {
                 id: iconName
                 Layout.fillWidth: true
                 text: "folder"
+                placeholderText: "xdg icon name or svg icon file path"
                 onEditingFinished: () => { updateImageUrl() }
             }
             ComboBox {
@@ -87,36 +90,34 @@ int main(int argc, char ** argv) {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                color: "transparent"
 
                 Image {
                     id: iconImage
                     anchors.centerIn: parent
                     fillMode: Image.PreserveAspectFit
                     source: undefined
-                    sourceSize.width: 128
-                    sourceSize.height: 128
+                    sourceSize: Qt.size(128, 128)
                 }
             }
             Slider {
                 id: sizeSlider
                 Layout.alignment: Qt.AlignHCenter
                 from: 1
-                value: 1
-                to: 3
+                value: 3
+                to: 5
                 snapMode: Slider.SnapAlways
                 stepSize: 1
                 onMoved: () => {
                     var wh = 128
                     switch (sizeSlider.value) {
-                    case 1:
-                        wh = 128; break
-                    case 2:
-                        wh = 256; break
-                    case 3:
-                        wh = 384; break
+                    case 1: wh = 22; break
+                    case 2: wh = 64; break
+                    case 3: wh = 128; break
+                    case 4: wh = 256; break
+                    case 5: wh = 384; break
                     }
-                    iconImage.sourceSize.width = wh
-                    iconImage.sourceSize.height = wh
+                    iconImage.sourceSize = Qt.size(wh, wh)
                 }
             }
         }
