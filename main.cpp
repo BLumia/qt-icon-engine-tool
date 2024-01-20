@@ -54,6 +54,7 @@ int main(int argc, char ** argv) {
     IconLoaderImageProvider * provider = new IconLoaderImageProvider;
     engine.addImageProvider("icon_engine_provider", provider);
     engine.rootContext()->setContextProperty("engines", provider->iconEngineNames());
+    engine.rootContext()->setContextProperty("qtversion", qVersion());
     engine.loadData(R"(
     import QtQuick 2
     import QtQuick.Window 2
@@ -64,6 +65,7 @@ int main(int argc, char ** argv) {
         width: 450
         height: 450
         color: systemPalette.window
+        title: qtversion
 
         function updateImageUrl() {
             iconImage.source = "image://icon_engine_provider/" + iconEngineList.currentIndex + "/" + iconName.text;
